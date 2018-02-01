@@ -4,3 +4,14 @@
   version: fef433e70fe8ef57f3e9da3a903f1a05c1539231
   name: klems.sysadmin-tools
 
+- src: https://github.com/klems/ansible-role-locales-timezone
+  version: 1253c658aa9cd72d7d13ecfff876c6b68402de07
+  name: klems.locales-timezone
+
+- src: https://github.com/klems/ansible-role-motd
+  version: 92fce79c67ab4a35206a9ba62ecd86bfef45b0e7
+  name: klems.motd
+
+- src: https://github.com/klems/ansible-role-partition-and-mount-disks
+  version: b5f870de352af7754d3eb7a63b9a94d322398959
+  name: klems.partition-and-mount-disks

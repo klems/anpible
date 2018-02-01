@@ -1,0 +1,5 @@
+[resilio_srv]
+pi-resilio-01  ansible_host=127.0.0.1   hostname=pi-resilio-01
+
+[pi:children]
+resilio_srv

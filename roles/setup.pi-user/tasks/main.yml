@@ -1,0 +1,17 @@
+---
+
+- name: "deleting default user accounts ..."
+  user:
+    name: "{{ item }}"
+    state: absent
+    remove: yes
+  with_items:
+    - pi
+    - ubuntu
+  become: yes
+
+- name: "deleting pi user passwordless sudo file ..."
+  file:
+    path: /etc/sudoers.d/010_pi-nopasswd
+    state: absent
+  become: yes

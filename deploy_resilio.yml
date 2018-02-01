@@ -1,0 +1,11 @@
+---
+
+- name: "DEPLOY --- RESILIO"
+  hosts: resilio_srv
+  roles:
+    - setup.pi-user
+    - setup.hostname
+    - klems.sysadmin-tools
+    - klems.locales-timezone
+    - klems.motd
+    - klems.partition-and-mount-disks
