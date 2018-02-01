@@ -1,0 +1,6 @@
+---
+
+- src: https://github.com/klems/ansible-role-sysadmin-tools
+  version: fef433e70fe8ef57f3e9da3a903f1a05c1539231
+  name: klems.sysadmin-tools
+
