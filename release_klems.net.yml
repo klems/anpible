@@ -1,0 +1,8 @@
+---
+
+- name: "RELEASE --> klems.net"
+  hosts: web_srv
+  serial: 1
+  roles:
+    - { role: klems.packages-installer, sys_packages: ['nginx', 'git', 'php7.0-fpm', 'php7.0-gd', 'php7.0-curl', 'php7.0-mbstring', 'php7.0-zip', 'php7.0-xml', 'sendmail']}
+    - release.klems.net

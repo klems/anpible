@@ -1,0 +1,7 @@
+---
+
+- name: "DEPLOY --> WEB SERVERS"
+  hosts: web_srv
+  roles:
+    - { role: klems.packages-installer, sys_packages: ['nginx']}
+    - setup.nginx-hosting

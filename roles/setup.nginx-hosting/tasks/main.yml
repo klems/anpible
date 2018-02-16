@@ -1,0 +1,50 @@
+---
+
+- name: "adding [ansible] user to the [www-data] group ..."
+  user:
+    name=ansible
+    shell=/bin/bash
+    groups=sudo,www-data
+    append=yes
+  become: yes
+
+- name: "deactivate default nginx vhost ..."
+  file:
+    dest=/etc/nginx/sites-enabled/default
+    state=absent
+  notify: restart nginx
+  become: yes
+
+- name: "delete default nginx html folder ..."
+  file:
+    path=/var/www/html
+    state=absent
+  notify: restart nginx
+  become: yes
+
+- name: "creating folders for each vhost ..."
+  file:
+    path="{{ item.webroot }}"
+    state=directory
+    mode=0755
+    owner=ansible
+    group=www-data
+  with_items: "{{ vhosts }}"
+  become: yes
+
+- name: "sending vhost(s) config ..."
+  template:
+    src=vhost.conf.j2
+    dest=/etc/nginx/sites-available/{{ item.domain }}.conf
+  with_items: "{{ vhosts }}"
+  notify: restart nginx
+  become: yes
+
+- name: "activating vhost(s) config ..."
+  file:
+    src=/etc/nginx/sites-available/{{ item.domain }}.conf
+    dest=/etc/nginx/sites-enabled/{{ item.domain }}.conf
+    state=link
+  with_items: "{{ vhosts }}"
+  notify: restart nginx
+  become: yes

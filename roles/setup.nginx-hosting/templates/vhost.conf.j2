@@ -1,0 +1,11 @@
+server {
+    listen      {{ item.port }};
+    server_name {{ item.domain }};
+    root        {{ item.webroot }};
+
+    index index.html index.htm index.php;
+
+    access_log /var/log/nginx/{{ item.domain }}.access.log;
+    error_log /var/log/nginx/{{ item.domain }}.error.log error;
+
+}

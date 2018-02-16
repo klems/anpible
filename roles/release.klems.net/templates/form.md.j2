@@ -1,0 +1,51 @@
+---
+title: Contact
+form:
+    name: contact
+    fields:
+        - name: name
+          label: Name
+          placeholder: Enter your name
+          autofocus: on
+          autocomplete: on
+          type: text
+          validate:
+            required: true
+        - name: email
+          label: Email
+          placeholder: Enter your email address
+          type: email
+          validate:
+            required: true
+        - name: message
+          label: Message
+          placeholder: Enter your message
+          type: textarea
+          validate:
+            required: true
+        - name: g-recaptcha-response
+          label: Captcha
+          type: captcha
+          recatpcha_site_key: {{ grav.captcha_site_key }}
+          recaptcha_not_validated: 'Captcha not valid!'
+          validate:
+            required: true
+    buttons:
+        - type: submit
+          value: Submit
+        - type: reset
+          value: Reset
+    process:
+        - captcha:
+            recatpcha_secret: {{ grav.captcha_site_secret }}
+        - email:
+            subject: "[Site Contact Form] {% raw %}{{ form.value.name|e }}{% endraw %}"
+            body: "{% raw %}{% include 'forms/data.html.twig' %}{% endraw %}"
+        - save:
+            fileprefix: contact-
+            dateformat: Ymd-His-u
+            extension: txt
+            body: "{% raw %}{% include 'forms/data.txt.twig' %}{% endraw %}"
+        - message: Thank you for getting in touch!
+        - display: thankyou
+---

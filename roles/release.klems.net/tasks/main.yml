@@ -1,0 +1,179 @@
+---
+
+- name: "stopping nginx ..."
+  service:
+    name: nginx
+    state: stopped
+    enabled: yes
+  become: yes
+
+- name: "creating vhost folder ..."
+  file:
+    dest: "{{ grav.webroot }}"
+    state: directory
+    group: www-data
+    owner: ansible
+    recurse: yes
+  become: yes
+
+- name: "git checkout website ..."
+  git:
+    repo: "{{ grav.repo }}"
+    dest: "{{ grav.webroot }}"
+    force: yes
+    accept_hostkey: yes
+  notify: restart nginx
+
+- name: "changing vhost folder permissions ..."
+  file:
+    dest: "{{ grav.webroot }}"
+    state: directory
+    group: www-data
+    owner: www-data
+    recurse: yes
+  become: yes
+
+- name: "creating composer cache folder ..."
+  file:
+    path: /var/www/.composer
+    state: directory
+    group: www-data
+    owner: www-data
+  become: yes
+
+- name: "upgrading grav to its latest release ..."
+  command: bin/gpm selfupgrade -y -q
+  args:
+    chdir: "{{ grav.webroot }}"
+  become: yes
+  become_user: www-data
+
+- name: "initial install ..."
+  command: bin/grav install
+  args:
+    chdir: "{{ grav.webroot }}"
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "installing addons ..."
+  command: bin/gpm install -q -n {{ item }}
+  args:
+    chdir: "{{ grav.webroot }}"
+  with_items:
+    - admin
+    - email
+    - antimatter
+    - featherlight
+    - feed
+    - form
+    - lightslider
+    - login
+    - archives
+    - tagcloud
+    - gravstrap
+    - shortcode-ui
+    - youtube
+    - markdown-notices
+    - precache
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "creating accounts ..."
+  template:
+    src: author.yaml.j2
+    dest: "{{ grav.webroot }}/user/accounts/{{ grav.author }}.yaml"
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "updating antimatter theme ..."
+  copy:
+    src: sidebar.html.twig
+    dest: "{{ grav.webroot }}/user/themes/antimatter/templates/partials/sidebar.html.twig"
+    owner: www-data
+    group: www-data
+    mode: 0644
+  notify: restart nginx
+  become: yes
+
+- name: "setup reCaptcha ..."
+  template:
+    src: email.yaml.j2
+    dest: "{{ grav.webroot }}/user/plugins/email/email.yaml"
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "sending contact form ..."
+  template:
+    src: form.md.j2
+    dest: "{{ grav.webroot }}/user/pages/03.contact/form.md"
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "sending nginx config ..."
+  template:
+    src: vhost.conf.j2
+    dest: /etc/nginx/sites-available/{{ grav.url }}.conf
+  notify: restart nginx
+  become: yes
+
+# - name: "restoring images ..."
+#   synchronize:
+#     src: "{{timecapsules.01.mount_point}}/web/{{web_klems.url}}/images/"
+#     dest: "{{web_klems.webroot}}/user/pages/images/"
+#     rsync_opts:
+#       - "--delete"
+#   delegate_to: "{{inventory_hostname}}"
+#   become: yes
+
+- name: "restoring files permissions ..."
+  file:
+    dest: "{{ grav.webroot }}/user/pages/images/"
+    state: directory
+    group: www-data
+    owner: www-data
+    recurse: yes
+    mode: 644
+  become: yes
+
+- name: "restoring folder permissions ..."
+  file:
+    dest: "{{ grav.webroot }}/user/pages/images/"
+    state: directory
+    group: www-data
+    owner: www-data
+    mode: 0755
+  become: yes
+
+- name: "clearing cache ..."
+  command: bin/grav clear-cache
+  args:
+    chdir: "{{ grav.webroot }}/"
+  notify:
+    - restart nginx
+    - restart php7-fpm
+  become: yes
+  become_user: www-data
+
+- name: "starting nginx ..."
+  service:
+    name: nginx
+    state: started
+  become: yes
+
+- name: "renewing cache with precache plugin ..."
+  command: bin/plugin precache url {{ item }}
+  args:
+    chdir: "{{ grav.webroot }}/"
+  with_items:
+    - https://{{ grav.url }}/contact
+    - https://{{ grav.url }}/blog
+  notify:
+    - restart nginx
+    - restart php7-fpm
+  become: yes
+  become_user: www-data
