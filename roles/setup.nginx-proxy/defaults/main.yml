@@ -1,0 +1,10 @@
+---
+
+proxy_redirections:
+  - domain: "domain.com"
+    port: 80
+    admin: "admin@domain.com"
+  - domain: "domain.org"
+    port: 8080
+    admin: "admin@domain.com"
+    dedicated: 192.168.0.100

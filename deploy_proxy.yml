@@ -1,0 +1,8 @@
+---
+
+- name: "DEPLOY --> PROXY SERVERS"
+  hosts: proxy_srv
+  roles:
+    - { role: klems.packages-installer, sys_packages: ['nginx', 'certbot']}
+    - setup.letsencrypt-certificates
+    - setup.nginx-proxy

@@ -1,0 +1,30 @@
+---
+
+- name: "creating folder [/var/www/certs] to store certificate ..."
+  file:
+    path=/var/www/certs/
+    state=directory
+    mode=0755
+    owner=www-data
+    group=www-data
+  become: yes
+
+- name: "temporarly stopping nginx server ..."
+  service:
+    name=nginx
+    state=stopped
+  become: yes
+
+- name: "generating SSL certificates ..."
+  command: certbot certonly --standalone -d {{ item.domain }} -d www.{{ item.domain }} -n --agree-tos --email {{ item.admin }}
+    chdir=/var/www/certs/
+  with_items: "{{ proxy_redirections }}"
+  become: yes
+  notify: restart nginx
+
+- name: "starting nginx server ..."
+  service:
+    name=nginx
+    state=started
+    enabled=yes
+  become: yes

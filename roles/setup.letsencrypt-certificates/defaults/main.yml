@@ -1,0 +1,4 @@
+---
+proxy_redirections:
+  - domain: "domain.com"
+    admin: "admin@domain.com"

@@ -4,6 +4,7 @@
   file:
     path: "/etc/fail2ban/jail.d/defaults-debian.conf"
     state: absent
+  notify: restart fail2ban
   become: yes
 
 - name: "sending default fail2ban config file ..."

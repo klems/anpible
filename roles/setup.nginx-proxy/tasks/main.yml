@@ -1,0 +1,42 @@
+---
+
+- name: "deleting default nginx configuration ..."
+  file:
+    path=/etc/nginx/sites-enabled/default
+    state=absent
+  notify: restart nginx
+  become: yes
+
+- name: "configuring nginx as reverse proxy ..."
+  template:
+    src=proxy.conf.j2
+    dest=/etc/nginx/conf.d/proxy.conf
+  notify: restart nginx
+  become: yes
+
+- name: "adding proxy redirections to webservers ..."
+  template:
+    src=vhost.conf.j2
+    dest=/etc/nginx/sites-available/{{ item.domain }}.conf
+  when: "item.dedicated is not defined"
+  with_items: "{{ proxy_redirections }}"
+  notify: restart nginx
+  become: yes
+
+- name: "adding proxy redirections to dedicated servers ..."
+  template:
+    src=dedicated.vhost.conf.j2
+    dest=/etc/nginx/sites-available/{{ item.domain }}.conf
+  when: "item.dedicated is defined"
+  with_items: "{{ proxy_redirections }}"
+  notify: restart nginx
+  become: yes
+
+- name: "activating proxy redirections ..."
+  file:
+    src=/etc/nginx/sites-available/{{ item.domain }}.conf
+    dest=/etc/nginx/sites-enabled/{{ item.domain }}.conf
+    state=link
+  with_items: "{{ proxy_redirections }}"
+  notify: restart nginx
+  become: yes
