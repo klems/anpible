@@ -1,0 +1,11 @@
+---
+
+- name: "SETUP --> SYSTEM"
+  hosts: all
+  roles:
+    - setup.pi-user
+    - setup.hostname
+    - setup.dns
+    - klems.sysadmin-tools
+    - klems.locales-timezone
+    - klems.motd

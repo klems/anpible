@@ -1,0 +1,25 @@
+---
+
+- name: "deleting Debian default ssh config file ..."
+  file:
+    path: "/etc/fail2ban/jail.d/defaults-debian.conf"
+    state: absent
+  become: yes
+
+- name: "sending default fail2ban config file ..."
+  template:
+    src=jail.conf.j2
+    dest=/etc/fail2ban/jail.conf
+    mode=0644
+  notify: restart fail2ban
+  become: yes
+
+- name: "sending jails config file ..."
+  template:
+    src={{ item }}.j2
+    dest=/etc/fail2ban/jail.d/{{ item }}
+    mode=0644
+  with_items:
+    - ssh.conf
+  notify: restart fail2ban
+  become: yes

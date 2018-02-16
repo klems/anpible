@@ -23,3 +23,7 @@
 - src: https://github.com/klems/ansible-role-crontabs
   version: 0124a16af167354dc74d877f303c201bcd12c5e0
   name: klems.crontabs
+
+- src: https://github.com/klems/ansible-role-packages-installer
+  version: 9d919a6ac0ca46f2e96000a4bcfc3df6308a152a
+  name: klems.packages-installer

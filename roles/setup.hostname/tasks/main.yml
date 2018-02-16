@@ -9,7 +9,7 @@
   replace:
     dest: /etc/hosts
     regexp: 'raspberrypi'
-    replace: "{{ hostname}}"
+    replace: "{{ hostname }}"
     backup: yes
   become: yes
 

@@ -1,0 +1,3 @@
+---
+fail2ban_dest_email: "admin@domain.com"
+fail2ban_sender_email: "fail2ban@domain.com"
