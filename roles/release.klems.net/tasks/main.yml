@@ -121,15 +121,6 @@
   notify: restart nginx
   become: yes
 
-# - name: "restoring images ..."
-#   synchronize:
-#     src: "{{timecapsules.01.mount_point}}/web/{{web_klems.url}}/images/"
-#     dest: "{{web_klems.webroot}}/user/pages/images/"
-#     rsync_opts:
-#       - "--delete"
-#   delegate_to: "{{inventory_hostname}}"
-#   become: yes
-
 - name: "restoring files permissions ..."
   file:
     dest: "{{ grav.webroot }}/user/pages/images/"
@@ -137,7 +128,7 @@
     group: www-data
     owner: www-data
     recurse: yes
-    mode: 644
+    mode: 0644
   become: yes
 
 - name: "restoring folder permissions ..."
@@ -169,11 +160,11 @@
   command: bin/plugin precache url {{ item }}
   args:
     chdir: "{{ grav.webroot }}/"
-  with_items:
-    - https://{{ grav.url }}/contact
-    - https://{{ grav.url }}/blog
+  with_items: "{{ grav_cache_urls }}"
   notify:
     - restart nginx
     - restart php7-fpm
+  tags:
+    - renew-cache
   become: yes
   become_user: www-data
