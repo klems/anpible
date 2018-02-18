@@ -26,7 +26,7 @@ form:
         - name: g-recaptcha-response
           label: Captcha
           type: captcha
-          recatpcha_site_key: {{ grav.captcha_site_key }}
+          recaptcha_site_key: {{ grav.captcha_site_key }}
           recaptcha_not_validated: 'Captcha not valid!'
           validate:
             required: true
@@ -37,7 +37,7 @@ form:
           value: Reset
     process:
         - captcha:
-            recatpcha_secret: {{ grav.captcha_site_secret }}
+            recaptcha_secret: {{ grav.captcha_secret }}
         - email:
             subject: "[Site Contact Form] {% raw %}{{ form.value.name|e }}{% endraw %}"
             body: "{% raw %}{% include 'forms/data.html.twig' %}{% endraw %}"

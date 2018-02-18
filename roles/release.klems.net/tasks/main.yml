@@ -76,6 +76,26 @@
     - youtube
     - markdown-notices
     - precache
+    - recaptchacontact
+  notify: restart nginx
+  become: yes
+  become_user: www-data
+
+- name: "creating extra folder to store plugins configurations ..."
+  file:
+    path: "{{ grav.webroot }}/user/config/plugins/"
+    state: directory
+    mode: 0755
+  become: yes
+  become_user: www-data
+
+- name: "sending config files for addons ..."
+  template:
+    src: "{{ item }}.yaml.j2"
+    dest: "{{ grav.webroot }}/user/config/plugins/{{ item }}.yaml"
+  with_items:
+    - recaptchacontact
+    - email
   notify: restart nginx
   become: yes
   become_user: www-data
@@ -97,14 +117,6 @@
     mode: 0644
   notify: restart nginx
   become: yes
-
-- name: "setup reCaptcha ..."
-  template:
-    src: email.yaml.j2
-    dest: "{{ grav.webroot }}/user/plugins/email/email.yaml"
-  notify: restart nginx
-  become: yes
-  become_user: www-data
 
 - name: "sending contact form ..."
   template:
