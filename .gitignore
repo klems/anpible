@@ -1,5 +1,4 @@
-group_vars/all.yml
-group_vars/pi.yml
+group_vars/*.yml
 
 inventory/pi.ini
 
