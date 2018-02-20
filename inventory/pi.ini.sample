@@ -1,5 +1,18 @@
-[resilio_srv]
-pi-resilio-01  ansible_host=127.0.0.1   hostname=pi-resilio-01
+[web_srv]
+srv1 ansible_ssh_host=192.168.0.10 hostname=srv1
+srv2 ansible_ssh_host=192.168.0.11 hostname=srv2
+
+[mail_srv]
+srv3 ansible_ssh_host=192.168.0.12 hostname=srv3
+
+[proxy_srv]
+srv4 ansible_ssh_host=192.168.0.13 hostname=srv4
+
+[gateway_srv]
+srv5 ansible_ssh_host=192.168.0.111 hostname=srv5
 
 [pi:children]
-resilio_srv
+web_srv
+mail_srv
+proxy_srv
+gateway_srv
