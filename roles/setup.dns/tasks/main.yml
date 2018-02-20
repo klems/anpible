@@ -3,7 +3,7 @@
 - name: "adding FQDN to /etc/hosts"
   lineinfile:
     path: /etc/hosts
-    line: "127.0.1.1 {{ ansible_nodename }} {{ ansible_nodename }}.{{ domain }}"
+    line: "127.0.1.1 {{ ansible_nodename }}.{{ domain }} {{ ansible_nodename }}"
     regexp: "^127.0.1.1.*$"
   become: yes
 
