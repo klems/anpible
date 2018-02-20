@@ -1,4 +1,7 @@
 ---
+domain: "domain.com"
+domain_admin: "admin@domain.com"
+
 proxy_redirections:
   - domain: "domain.com"
     admin: "admin@domain.com"

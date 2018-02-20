@@ -4,5 +4,5 @@
   hosts: proxy_srv
   roles:
     - { role: klems.packages-installer, sys_packages: ['nginx', 'certbot']}
-    - setup.letsencrypt-certificates
+    - setup.letsencrypt-web-certificates
     - setup.nginx-proxy
