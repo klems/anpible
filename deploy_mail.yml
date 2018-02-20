@@ -1,0 +1,8 @@
+---
+
+- name: "DEPLOY --> MAIL SERVER"
+  hosts: mail_srv
+  roles:
+    - { role: klems.packages-installer, sys_packages: ['unbound', 'dnsutils', 'resolvconf', 'certbot']}
+    - setup.unbound
+    - setup.letsencrypt-mail-certificates

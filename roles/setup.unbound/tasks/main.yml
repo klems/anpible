@@ -1,0 +1,6 @@
+---
+
+- name: "updating unbound key ..."
+  command: unbound-anchor -a /var/lib/unbound/root.key
+  notify: restart-unbound
+  become: yes
