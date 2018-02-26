@@ -1,0 +1,7 @@
+---
+
+- name: "DEPLOY --> DATABASE SERVERS"
+  hosts: db_srv
+  roles:
+    - klems.packages-installer
+    - setup.mariadb

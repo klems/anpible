@@ -1,0 +1,51 @@
+---
+
+- name: "configuring MariaDB server bind address ..."
+  replace:
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: '^bind-address'
+    replace: '#bind-address'
+    backup: yes
+  become: yes
+  notify: restart mariadb
+  
+- name: "updating MariaDB root password ..."
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+  with_items:
+    - "{{ ansible_ssh_host }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  become: yes
+  notify: restart mariadb
+
+- name: "adding config file [/root/.my.cnf] ..."
+  template:
+    src: my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+  become: yes
+  notify: restart mariadb
+
+- name: "creating MariaDB databases ..."
+  mysql_db:
+    name: "{{ item.db_name }}"
+    state: present
+  with_items: "{{ mariadb_databases }}"
+  become: yes
+  notify: restart mariadb
+
+- name: "creating MySQL users ..."
+  mysql_user:
+    name: "{{ item.db_user }}"
+    password: "{{ item.db_pass}}"
+    host: "%"
+    priv: "{{item.db_name}}.*:ALL"
+    state: present
+  with_items: "{{ mariadb_databases }}"
+  notify: restart mariadb
+  become: yes

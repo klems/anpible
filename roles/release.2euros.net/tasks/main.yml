@@ -1,0 +1,58 @@
+---
+
+- name: "stopping nginx ..."
+  service:
+    name: nginx
+    state: stopped
+    enabled: yes
+  become: yes
+
+- name: "creating vhost folder ..."
+  file:
+    dest: "{{ twoeuros.webroot }}"
+    state: directory
+    group: www-data
+    owner: ansible
+    recurse: yes
+  become: yes
+
+- name: "git checkout website ..."
+  git:
+    repo: "{{ twoeuros.repo }}"
+    dest: "{{ twoeuros.webroot }}"
+    force: yes
+    accept_hostkey: true
+  notify: restart nginx
+
+- name: "sending 2euros.net database config ..."
+  template:
+    src: db.php.j2
+    dest: "{{ twoeuros.webroot }}/conf/db.php"
+    owner: www-data
+    group: www-data
+  notify: restart nginx
+  become: yes
+
+- name: "changing vhost folder permissions ..."
+  file:
+    dest: "{{ twoeuros.webroot }}"
+    state: directory
+    group: www-data
+    owner: www-data
+    recurse: yes
+  become: yes
+
+- name: "sending 2euros.net vhost config ..."
+  template:
+    src: vhost.conf.j2
+    dest: "/etc/nginx/sites-available/{{ twoeuros.url }}.conf"
+  notify: restart nginx
+  become: yes
+
+- name: "activating 2euros vhost config ..."
+  file: 
+    src: "/etc/nginx/sites-available/{{ twoeuros.url }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ twoeuros.url}}.conf"
+    state: link
+  notify: restart nginx
+  become: yes
