@@ -23,6 +23,17 @@
   notify: restart dovecot
   become: yes
 
+- name: "adding alias to get root emails ..."
+  lineinfile:
+    path: /etc/aliases
+    line: "{{ item.user }}: {{ item.mbox }}"
+  with_items: "{{ email_aliases }}"
+  notify: 
+    - update db aliases
+    - restart dovecot
+    - restart postfix
+  become: yes
+
 - name: "configuring dovecot sieve rules ..."
   template:
     src: dovecot.sieve.j2
