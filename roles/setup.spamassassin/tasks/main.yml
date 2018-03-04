@@ -1,0 +1,11 @@
+---
+
+- name: "updating local.cf configuration ..."
+  copy:
+    src: local.cf
+    dest: /etc/spamassassin/local.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart spamassassin
+  become: yes

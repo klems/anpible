@@ -1,0 +1,26 @@
+require ["fileinto"];
+
+#~-~-~-#
+# SPAM #
+#~-~-~-#
+
+if header :contains "subject" ["[SPAM]", "***SPAM***"] {
+  fileinto "Junk";
+}
+
+#~-~-~-~-~-~-~-~-~-~#
+# USER CUSTOM RULES #
+#~-~-~-~-~-~-~-~-~-~#
+
+# Example
+elsif address :is "from" ["spam@spam.com", "unwanted@spam.com"] {
+  fileinto "Junk";
+}
+
+#~-~-~-~#
+# INBOX #
+#~-~-~-~#
+
+else {
+  keep;
+}

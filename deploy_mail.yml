@@ -4,4 +4,6 @@
   hosts: mail_srv
   roles:
     - klems.packages-installer
-    - setup.unbound
+    - setup.postfix
+    - setup.dovecot
+    - setup.spamassassin

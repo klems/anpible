@@ -1,0 +1,6 @@
+rewrite_header Subject [SPAM]
+required_score 5.0
+ifplugin Mail::SpamAssassin::Plugin::Shortcircuit
+shortcircuit USER_IN_WHITELIST       on
+shortcircuit USER_IN_BLACKLIST       on
+endif # Mail::SpamAssassin::Plugin::Shortcircuit

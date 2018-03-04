@@ -1,0 +1,58 @@
+---
+
+- name: "editing dovecot main config file ..."
+  replace:
+    dest: /etc/dovecot/dovecot.conf
+    regexp: "^#listen.*"
+    replace: "listen = *"
+    backup: yes
+  become: yes
+  notify: restart dovecot
+
+- name: "updating dovecot config files ..."
+  template: 
+    src: "{{ item }}.j2"
+    dest: "/etc/dovecot/conf.d/{{ item }}"
+  with_items:
+    - 10-ssl.conf
+    - 10-auth.conf
+    - 10-master.conf
+    - 10-mail.conf
+    - 15-lda.conf
+    - 90-sieve.conf
+  notify: restart dovecot
+  become: yes
+
+- name: "configuring dovecot sieve rules ..."
+  template:
+    src: dovecot.sieve.j2
+    dest: "/home/{{ item.name }}/Maildir/.dovecot.sieve"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: 0644
+  with_items: "{{ email_accounts }}"
+  notify: restart dovecot
+  become: yes
+
+- name: "checking [/etc/cram-md5.pwd] user account file ..."
+  stat:
+    path: /etc/cram-md5.pwd
+  register: file_cram
+
+- name: "creating [/etc/cram-md5.pwd] user account file ..."
+  file:
+    path: /etc/cram-md5.pwd
+    state: touch
+    mode: 0644
+    owner: root
+    group: root
+  when: file_cram.stat.exists == False
+  become: yes
+
+- name: "adding [/etc/cram-md5.pwd] user account credentials ..."
+  lineinfile:
+    dest: /etc/cram-md5.pwd
+    line: "{{ item.name }}:{{ item.password_md5 }}"
+  with_items: "{{ email_accounts }}"
+  notify: restart dovecot
+  become: yes

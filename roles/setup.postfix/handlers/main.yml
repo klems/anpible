@@ -1,8 +1,8 @@
 ---
 
-- name: restart-unbound
+- name: restart postfix
   service:
-    name: unbound
+    name: postfix
     state: restarted
     enabled: yes
   become: yes
