@@ -9,3 +9,12 @@
     mode: 0644
   notify: restart spamassassin
   become: yes
+
+- name: "configure crontab for weekly spamassassin rules upgrades ..."
+  cron:
+    name: "spamassassin_updates"
+    cron_file: spamassassin-autoupdate
+    special_time: weekly
+    job: "/usr/bin/sa-update && service spamassassin restart"
+    user: root
+  become: yes
