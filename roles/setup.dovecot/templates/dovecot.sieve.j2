@@ -15,7 +15,7 @@ if header :contains "subject" ["[SPAM]", "***SPAM***"] {
 {{ config.comment }}
 {% endif %}
 elsif header :contains "subject" {{ config.pattern }} {
-  fileinto "{{ config.into }}"
+  fileinto "{{ config.into }}";
 }
 
 {% endfor %}
@@ -27,7 +27,7 @@ elsif header :contains "subject" {{ config.pattern }} {
 {{ config.comment }}
 {% endif %}
 elsif address :is "from" {{ config.from }} {
-  fileinto "{{ config.into }}"
+  fileinto "{{ config.into }}";
 }
 
 {% endfor %}
