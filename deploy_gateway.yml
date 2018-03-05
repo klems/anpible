@@ -3,5 +3,5 @@
 - name: "DEPLOY --> GATEWAY SERVERS"
   hosts: gateway_srv
   roles:
-    - { role: klems.packages-installer, sys_packages: ['fail2ban', 'sendmail']}
+    - klems.packages-installer
     - setup.fail2ban

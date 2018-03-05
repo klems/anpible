@@ -1,0 +1,33 @@
+---
+
+- name: "adding email users ..."
+  user:
+    name: "{{ item.name }}"
+    comment: "mailbox account for {{ item.comment }}"
+    password: "{{ item.password }}"
+  with_items: "{{ email_accounts }}"
+  become: yes
+
+- name: "creating email users maildirs ..."
+  file:
+    path: "/home/{{ item.name }}/Maildir"
+    state: directory
+    mode: 0755
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+  with_items: "{{ email_accounts }}"
+  become: yes
+  
+- name: "updating postfix main.cf configuration ..."
+  template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+  notify: restart postfix
+  become: yes
+
+- name: "updating postfix master.cf configuration ..."
+  template: 
+    src: master.cf.j2
+    dest: /etc/postfix/master.cf
+  notify: restart postfix
+  become: yes

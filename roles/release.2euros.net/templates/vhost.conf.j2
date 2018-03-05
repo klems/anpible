@@ -1,0 +1,18 @@
+server {
+    listen      80;
+    server_name {{ twoeuros.url }};
+    root        {{ twoeuros.webroot }};
+
+    index index.php;
+
+    access_log /var/log/nginx/{{ twoeuros.url }}.access.log;
+    error_log /var/log/nginx/{{ twoeuros.url }}.error.log error;
+
+    location ~ \.php$ {
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+    fastcgi_index index.php;
+    include /etc/nginx/fastcgi.conf;
+    }
+
+}

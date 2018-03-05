@@ -1,0 +1,7 @@
+---
+
+- name: "RELEASE --> 2euros.net"
+  hosts: web_srv
+  serial: 1
+  roles:
+    - release.2euros.net

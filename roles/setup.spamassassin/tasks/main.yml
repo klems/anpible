@@ -1,0 +1,20 @@
+---
+
+- name: "updating local.cf configuration ..."
+  copy:
+    src: local.cf
+    dest: /etc/spamassassin/local.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart spamassassin
+  become: yes
+
+- name: "configure crontab for weekly spamassassin rules upgrades ..."
+  cron:
+    name: "spamassassin_updates"
+    cron_file: spamassassin-autoupdate
+    special_time: weekly
+    job: "/usr/bin/sa-update && service spamassassin restart"
+    user: root
+  become: yes

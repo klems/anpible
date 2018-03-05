@@ -1,0 +1,8 @@
+lda_mailbox_autocreate = yes
+
+protocol lda {
+  auth_socket_path = /var/run/dovecot/auth-master
+  log_path =
+  mail_plugins = sieve
+  postmaster_address = {{ domain_admin }}
+}

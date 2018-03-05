@@ -12,9 +12,10 @@
   become: yes
   notify: restart nginx
 
-- name: "generating SSL certificates for mail server ..."
-  command: certbot certonly --standalone --rsa-key-size 4096 -d mail.{{ domain }} -d imap.{{ domain }} -d smtp.{{ domain }} -n --agree-tos --email {{ domain_admin }}
+- name: "generating SSL certificates for mailboxes ..."
+  command: certbot certonly --standalone -d {{ domain }} -d www.{{ domain }} -d smtp.{{ domain }} -d imap.{{ domain }} -n --agree-tos --email {{ domain_admin }} --expand
   become: yes
+  notify: restart nginx
 
 - name: "starting nginx server ..."
   service:

@@ -1,0 +1,9 @@
+---
+
+- name: "DEPLOY --> MAIL SERVER"
+  hosts: mail_srv
+  roles:
+    - klems.packages-installer
+    - setup.postfix
+    - setup.dovecot
+    - setup.spamassassin

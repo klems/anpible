@@ -1,0 +1,9 @@
+disable_plaintext_auth = yes
+auth_mechanisms = plain login cram-md5
+
+passdb {
+  driver = passwd-file
+  args = scheme=cram-md5 /etc/cram-md5.pwd
+}
+
+!include auth-system.conf.ext
