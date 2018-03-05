@@ -3,24 +3,37 @@ require ["fileinto"];
 #~-~-~-#
 # SPAM #
 #~-~-~-#
-
 if header :contains "subject" ["[SPAM]", "***SPAM***"] {
   fileinto "Junk";
 }
 
-#~-~-~-~-~-~-~-~-~-~#
-# USER CUSTOM RULES #
-#~-~-~-~-~-~-~-~-~-~#
-
-# Example
-elsif address :is "from" ["spam@spam.com", "unwanted@spam.com"] {
-  fileinto "Junk";
+#~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-#
+# USER CUSTOM - PATTERNS - SUBJECT #
+#~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-#
+{% for config in sieve_rules_pattern_subject %}
+{% if config.comment is defined %}
+{{ config.comment }}
+{% endif %}
+elsif header :contains "subject" {{ config.pattern }} {
+  fileinto "{{ config.into }}"
 }
 
+{% endfor %}
+#~-~-~-~-~-~-~-~-~-~-#
+# USER CUSTOM - FROM #
+#~-~-~-~-~-~-~-~-~-~-#
+{% for config in sieve_rules_from_sender %}
+{% if config.comment is defined %}
+{{ config.comment }}
+{% endif %}
+elsif address :is "from" {{ config.from }} {
+  fileinto "{{ config.into }}"
+}
+
+{% endfor %}
 #~-~-~-~#
 # INBOX #
 #~-~-~-~#
-
 else {
   keep;
 }
