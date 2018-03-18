@@ -15,6 +15,6 @@
     name: "spamassassin_updates"
     cron_file: spamassassin-autoupdate
     special_time: weekly
-    job: "/usr/bin/sa-update && service spamassassin restart"
+    job: "/usr/bin/sa-update && systemctl restart spamassassin"
     user: root
   become: yes
