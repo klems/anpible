@@ -7,14 +7,6 @@ if header :contains "subject" ["[SPAM]", "***SPAM***"] {
   fileinto "Junk";
 }
 
-#~-~-~-~-~-~-~-~-~-~#
-# DOMAINS BLACKLIST #
-#~-~-~-~-~-~-~-~-~-~#
-# *.date
-elsif address :matches :domain "from" "*.date" {
-  reject "I am no longer accepting spams";
-}
-
 #~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-#
 # USER CUSTOM - PATTERNS - SUBJECT #
 #~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-#
