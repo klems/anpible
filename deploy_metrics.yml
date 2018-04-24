@@ -1,0 +1,8 @@
+---
+
+- name: "DEPLOY --> METRICS SERVERS"
+  hosts: metrics_srv
+  roles:
+    - klems.packages-installer
+    - setup.grafana
+    - setup.influxdb

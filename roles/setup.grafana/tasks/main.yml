@@ -1,0 +1,37 @@
+---
+
+- name: "Adding custom repository key for any grafana version ..."
+  apt_key:
+    url: "https://packagecloud.io/gpg.key"
+    state: present
+    keyring: "/etc/apt/trusted.gpg.d/packagecloud.gpg"
+  become: yes
+
+- name: "Adding custom repository to access any grafana version ..."
+  apt_repository:
+    repo: "deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main"
+    state: present
+    filename: "/etc/apt/sources.list.d/grafana.list"
+  become: yes
+
+- name: "Updating cache ..."
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: "Installing grafana ..."
+  apt:
+    name: "grafana"
+    state: present
+  notify:
+    - enable grafana
+  become: yes
+
+- name: "sending grafana config file ..."
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    mode: 0644
+  notify: 
+    - restart grafana
+  become: yes

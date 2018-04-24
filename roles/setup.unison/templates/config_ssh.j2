@@ -1,0 +1,5 @@
+{% for item in unison_ssh_configs %}
+Host {{ item.host }}
+  User {{ item.user }}
+  IdentityFile {{ item.identityfile }}
+{% endfor %}

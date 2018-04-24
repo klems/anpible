@@ -1,0 +1,7 @@
+---
+
+- name: "DEPLOY --> SYNC SERVERS"
+  hosts: sync_srv
+  roles:
+    - klems.packages-installer
+    - setup.unison

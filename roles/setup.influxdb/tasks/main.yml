@@ -1,0 +1,157 @@
+---
+
+- name: "creating influxdb group ..."
+  group:
+    name: influxdb
+    state: present
+  become: yes
+
+- name: "adding influxdb user ..."
+  user:
+    name: influxdb
+    shell: /bin/nologin
+    groups: influxdb
+  become: yes
+
+- name: "checking if influxdb package is present ..."
+  stat:
+    path: "/tmp/influxdb-1.2.0_linux_armhf.tar.gz"
+  register: influxpackage
+
+- name: "downloading influxdb for arm ..."
+  get_url:
+    url: https://dl.influxdata.com/influxdb/releases/influxdb-1.2.0_linux_armhf.tar.gz
+    dest: "/tmp/influxdb-1.2.0_linux_armhf.tar.gz"
+    mode: 0644
+  when: influxpackage.stat.exists == False
+
+- name: "uncompressing package ..."
+  unarchive:
+    src: "/tmp/influxdb-1.2.0_linux_armhf.tar.gz"
+    dest: "/tmp"
+    remote_src: True
+  when: influxpackage.stat.exists == False
+
+- name: "creating influxdb needed folders ..."
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: influxdb
+    group: influxdb
+  become: yes
+  with_items:
+    - /etc/influxdb
+    - /var/lib/influxdb
+    - /var/log/influxdb
+    - /usr/lib/influxdb/scripts
+
+- name: "installing binaries ..."
+  command: cp /tmp/influxdb-1.2.0-1/usr/bin/{{ item }} /usr/bin/{{ item }}
+  with_items:
+    - influx
+    - influxd
+    - influx_inspect
+    - influx_stress
+    - influx_tsm
+  become: yes
+  when: influxpackage.stat.exists == False
+
+- name: "verifying rights for binaries ..."
+  file:
+    path: "/usr/bin/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - influx
+    - influxd
+    - influx_inspect
+    - influx_stress
+    - influx_tsm
+  become: yes
+
+- name: "installing docs ..."
+  command: cp /tmp/influxdb-1.2.0-1/usr/share/man/man1/{{ item }} /usr/share/man/man1/{{ item }}
+  with_items:
+    - influx.1.gz
+    - influx_inspect.1.gz
+    - influx_stress.1.gz
+    - influx_tsm.1.gz
+    - influxd-backup.1.gz
+    - influxd-config.1.gz
+    - influxd-restore.1.gz
+    - influxd-run.1.gz
+    - influxd-version.1.gz
+    - influxd.1.gz
+  become: yes
+  when: influxpackage.stat.exists == False
+
+- name: "verifying rights for docs ..."
+  file:
+    path: "/usr/share/man/man1/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - influx.1.gz
+    - influx_inspect.1.gz
+    - influx_stress.1.gz
+    - influx_tsm.1.gz
+    - influxd-backup.1.gz
+    - influxd-config.1.gz
+    - influxd-restore.1.gz
+    - influxd-run.1.gz
+    - influxd-version.1.gz
+    - influxd.1.gz
+  become: yes
+
+- name: "installing systemd script ..."
+  command: cp /tmp/influxdb-1.2.0-1/usr/lib/influxdb/scripts/influxdb.service /lib/systemd/system/influxdb.service
+  become: yes
+  when: influxpackage.stat.exists == False
+
+- name: "installing startup script ..."
+  command: cp /tmp/influxdb-1.2.0-1/usr/lib/influxdb/scripts/init.sh /etc/init.d/influxdb
+  become: yes
+  when: influxpackage.stat.exists == False
+
+- name: "verifying rights for systemd scripts ..."
+  file:
+    path: /lib/systemd/system/influxdb.service
+    mode: 0755
+    owner: root
+    group: root
+  become: yes
+
+- name: "verifying rights for init script ..."
+  file:
+    path: /etc/init.d/influxdb
+    mode: 0755
+    owner: root
+    group: root
+  become: yes
+
+- name: "updating influxdb configuration ..."
+  template: 
+    src=influxdb.conf.j2
+    dest=/etc/influxdb/influxdb.conf
+  notify: restart influxdb
+  become: yes
+
+- name: "starting influxdb ..."
+  service:
+    name: influxdb
+    state: started
+    enabled: yes
+  become: yes
+
+- name: "Creating Influxdb Databases ..."
+  influxdb_database:
+    hostname: "{{ item.hostname }}"
+    database_name: "{{ item.database_name }}"
+    username: "{{ item.username }}"
+    password: "{{ item.password }}"
+    state: present
+  with_items: "{{ influxdb_databases }}"
+  become: yes

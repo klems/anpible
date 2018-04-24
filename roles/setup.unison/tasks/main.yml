@@ -1,0 +1,48 @@
+---
+
+- name: "Adding unison user ..."
+  user:
+    name: "{{ unison_user }}"
+    comment: "{{ unison_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: ".ssh/{{ unison_user }}"
+  become: yes
+
+- name: "Sending unison ssh config file ..."
+  template:
+    src: "config_ssh.j2"
+    dest: "~/.ssh/config"
+    mode: "0644"
+  with_items: 
+    - "{{ unison_ssh_configs }}"
+  become: yes
+  become_user: "{{ unison_user }}"
+
+- name: "Creating unison subfolder ..."
+  file:
+    path: "{{ unison_folder }}"
+    state: directory
+    mode: 0755
+  become: yes
+  become_user: "{{ unison_user }}"
+  
+- name: "Creating unison subfolder ..."
+  file:
+    path: "{{ unison_folder }}/files/{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ unison_categories }}"
+  become: yes
+  become_user: "{{ unison_user }}"
+    
+- name: "Sending unison config files ..."
+  template:
+    src: "config_unison.j2"
+    dest: "{{ unison_folder }}/config_{{ item.name }}.prf"
+    mode: "0644"
+  with_items: 
+    - "{{ unison_configs }}"
+  become: yes
+  become_user: "{{ unison_user }}"
